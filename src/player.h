@@ -57,17 +57,9 @@ public:
   // Set voice muting bitmask
   void mute_voices(int);
 
-  // Set buffer to copy samples from each buffer into, or NULL to disable
-  void set_scope_buffer(sample_t *buf, int size) {
-    scope_buf = buf;
-    scope_buf_size = size;
-  }
-
 private:
   Music_Emu *emu_;
-  sample_t *scope_buf;
   long sample_rate;
-  int scope_buf_size;
   bool paused;
   gme_info_t *track_info_;
   std::string filename_;

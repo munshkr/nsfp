@@ -24,7 +24,6 @@ static void sound_cleanup();
 
 Player::Player() {
   emu_ = 0;
-  scope_buf = 0;
   paused = false;
   track_info_ = nullptr;
 }
@@ -151,10 +150,6 @@ void Player::fill_buffer(void *data, sample_t *out, int count) {
   if (self->emu_) {
     if (gme_play(self->emu_, count, out)) {
     } // ignore error
-
-    if (self->scope_buf)
-      memcpy(self->scope_buf, out,
-             self->scope_buf_size * sizeof *self->scope_buf);
   }
 }
 
