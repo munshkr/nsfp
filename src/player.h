@@ -2,6 +2,7 @@
 #define __PLAYER_H__
 
 #include "gme/gme.h"
+#include <string>
 
 typedef short sample_t;
 
@@ -14,7 +15,7 @@ public:
   gme_err_t init(long sample_rate = 44100);
 
   // Load game music file. NULL on success, otherwise error string.
-  gme_err_t load_file(const char *path);
+  gme_err_t load_file(const std::string &path);
 
   // (Re)start playing track. Tracks are numbered from 0 to track_count() - 1.
   gme_err_t start_track(int track);
@@ -22,7 +23,12 @@ public:
   // Stop playing current file
   void stop();
 
+  //
   // Optional functions
+  //
+
+  // Return currently loaded filename
+  const std::string &filename() { return filename_; }
 
   // Number of tracks in current file, or 0 if no file loaded.
   int track_count() const;
@@ -64,6 +70,7 @@ private:
   int scope_buf_size;
   bool paused;
   gme_info_t *track_info_;
+  std::string filename_;
 
   void suspend();
   void resume();

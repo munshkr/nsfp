@@ -2,6 +2,8 @@
 #include <cstring>
 #include <string>
 
+using namespace std;
+
 #define RETURN_ERR(expr)                                                       \
   do {                                                                         \
     gme_err_t err_ = (expr);                                                   \
@@ -50,13 +52,15 @@ Player::~Player() {
   gme_free_info(track_info_);
 }
 
-gme_err_t Player::load_file(const char *path) {
+gme_err_t Player::load_file(const string &path) {
+  filename_ = path;
+
   stop();
 
-  RETURN_ERR(gme_open_file(path, &emu_, sample_rate));
+  RETURN_ERR(gme_open_file(path.c_str(), &emu_, sample_rate));
 
   char m3u_path[256 + 5];
-  strncpy(m3u_path, path, 256);
+  strncpy(m3u_path, path.c_str(), 256);
   m3u_path[256] = 0;
   char *p = strrchr(m3u_path, '.');
   if (!p)

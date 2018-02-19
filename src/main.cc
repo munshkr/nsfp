@@ -5,7 +5,37 @@
 
 using namespace std;
 
+void start_track(Player *player, int track) {
+  // Start first track
+  if (auto err = player->start_track(track)) {
+    cerr << "Player error: " << err << endl;
+    exit(1);
+  }
+
+  // Get track information
+  long seconds = player->track_info().length / 1000;
+  const char *game = player->track_info().game;
+  if (!*game) {
+    // extract filename
+    game = strrchr(player->filename().c_str(), '\\'); // DOS
+    if (!game)
+      game = strrchr(player->filename().c_str(), '/'); // UNIX
+    if (!game)
+      game = player->filename().c_str();
+    else
+      game++; // skip path separator
+  }
+
+  char title[512];
+  sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count(),
+          player->track_info().song, seconds / 60, seconds % 60);
+
+  cout << title << endl;
+}
+
 int main(int argc, char *argv[]) {
+  cerr << "nsfp 0.1 - Simple command-line player of NSF/NSFE files" << endl;
+
   if (argc != 2) {
     cerr << "Usage: " << argv[0] << " nsf_file" << endl;
     return 1;
@@ -33,18 +63,15 @@ int main(int argc, char *argv[]) {
   }
 
   // Load file
-  if (auto err = player->load_file(filename.c_str())) {
+  if (auto err = player->load_file(filename)) {
     cerr << "Player error: " << err << endl;
     return 1;
   }
 
   bool running = true;
 
-  // Start first track
-  if (auto err = player->start_track(0)) {
-    cerr << "Player error: " << err << endl;
-    return 1;
-  }
+  int track = 0;
+  start_track(player, track);
 
   while (running) {
     SDL_Delay(1000);
