@@ -11,3 +11,5 @@ set(SRC src/main.cc
 
 add_executable(nsfp ${SRC})
 target_link_libraries(nsfp LINK_PUBLIC SDL2 gme)
+
+install (TARGETS nsfp DESTINATION bin)
