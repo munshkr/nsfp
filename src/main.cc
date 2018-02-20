@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 Damián Silvani
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "player.h"
 #include <SDL2/SDL.h>
 #include <iostream>
@@ -26,7 +42,7 @@ void start_track(Player *player, int track, bool print_full_info = false) {
       game++; // skip path separator
   }
 
-  auto& info = player->track_info();
+  auto &info = player->track_info();
 
   if (print_full_info) {
     if (strcmp(info.game, "") != 0)
