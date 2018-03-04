@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "player.h"
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
+
+#include "player.h"
 
 using namespace std;
 

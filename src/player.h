@@ -44,7 +44,7 @@ public:
   //
 
   // Return currently loaded filename
-  const std::string &filename() { return filename_; }
+  const std::string &filename() const { return filename_; }
 
   // Number of tracks in current file, or 0 if no file loaded.
   int track_count() const;
@@ -59,7 +59,7 @@ public:
   bool track_ended() const;
 
   // Pointer to emulator
-  Music_Emu *emu() const { return emu_; }
+  Music_Emu &emu() const { return *emu_; }
 
   // Set stereo depth, where 0.0 = none and 1.0 = maximum
   void set_stereo_depth(double);
