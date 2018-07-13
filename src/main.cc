@@ -129,6 +129,14 @@ int main(int argc, char *argv[]) {
 
     while (running) {
       SDL_Delay(1000);
+      if (player->track_ended()) {
+        if (track < player->track_count() - 1) {
+          track++;
+          start_track(player, track, print_info);
+        } else {
+          running = false;
+        }
+      }
     }
 
     delete player;
