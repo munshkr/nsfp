@@ -6,14 +6,29 @@ Based on the Game Music Emu library.
 
 ## Usage
 
+
 ```
-$ nsfp Kirby.nes
+nsfp 0.1 - NSF/NSFE player
+Usage:
+  ./nsfp [OPTION...] INPUT
+
+      --input arg  Input file
+  -i, --info       Only show info (default: false)
+  -t, --track arg  Start playing from track NUM (default: 0)
+  -s, --single     Stop after playing current track (default: false)
+  -h, --help       Print this message (default: false)
+```
+
+For example, the following plays only track 3
+
+```
+$ nsfp Kirby.nes -t 3 -s
 nsfp 0.1 - Simple command-line player of NSF/NSFE files
 Game:      Kirby's Adventure
 Author:    Hirokazu Ando, Jun Ishikawa
 Copyright: 1993 HAL Laboratory, Nintendo
 
-Kirby's Adventure: 0/58  (2:30)
+Kirby's Adventure: 3/57  (2:30)
 ...
 ```
 
