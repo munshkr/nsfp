@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
     }
 
     const string input = result["input"].as<string>();
+    bool print_info = result["info"].as<bool>();
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
       cerr << "Failed to initialize SDL" << endl;
@@ -122,7 +123,7 @@ int main(int argc, char *argv[]) {
     bool running = true;
 
     int track = 0;
-    start_track(player, track, true);
+    start_track(player, track, print_info);
 
     while (running) {
       SDL_Delay(1000);
