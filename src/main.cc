@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
       ("i,info", "Only show info")
       ("t,track", "Start playing from track NUM",
         cxxopts::value<int>()->default_value("0"))
+      ("s,single", "Stop after playing current track")
       ("h,help", "Print this message");
 
     options.parse_positional({"input"});
@@ -96,6 +97,8 @@ int main(int argc, char *argv[]) {
 
     const string input = result["input"].as<string>();
     bool print_info = result["info"].as<bool>();
+    int track = result["track"].as<int>();
+    bool single = result["single"].as<bool>();
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
       cerr << "Failed to initialize SDL" << endl;
@@ -122,20 +125,16 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    bool running = true;
-
-    int track = result["track"].as<int>();
     start_track(player, track, print_info);
 
-    while (running) {
+    while (true) {
       SDL_Delay(1000);
+
       if (player->track_ended()) {
-        if (track < player->track_count() - 1) {
-          track++;
-          start_track(player, track, print_info);
-        } else {
-          running = false;
-        }
+        if (single || track == player->track_count() - 1) break;
+
+        track++;
+        start_track(player, track, print_info);
       }
     }
 
