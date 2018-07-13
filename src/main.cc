@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 
+#include "cxxopts.h"
 #include "player.h"
 
 using namespace std;
@@ -67,50 +68,72 @@ void start_track(Player *player, int track, bool print_full_info = false) {
 }
 
 int main(int argc, char *argv[]) {
-  cerr << "nsfp 0.1 - Simple command-line player of NSF/NSFE files" << endl;
+  try {
+    cxxopts::Options options(argv[0], "nsfp 0.1 - NSF/NSFE player");
 
-  if (argc != 2) {
-    cerr << "Usage: " << argv[0] << " nsf_file" << endl;
+    options.positional_help("INPUT").show_positional_help();
+
+    options.add_options()
+      ("input", "Input file", cxxopts::value<string>())
+      ("i,info", "Only show info")
+      ("h,help", "Print this message");
+
+    options.parse_positional({"input"});
+
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help")) {
+      cout << options.help({""}) << endl;
+      return 0;
+    }
+
+    if (!result.count("input")) {
+      cerr << options.help({""}) << endl;
+      return 1;
+    }
+
+    const string input = result["input"].as<string>();
+
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+      cerr << "Failed to initialize SDL" << endl;
+      return 1;
+    }
+    atexit(SDL_Quit);
+
+    // Create player
+    Player *player = new Player;
+    if (!player) {
+      cerr << "Out of memory" << endl;
+      return 1;
+    }
+
+    // Initialize
+    if (auto err = player->init()) {
+      cerr << "Player error: " << err << endl;
+      return 1;
+    }
+
+    // Load file
+    if (auto err = player->load_file(input)) {
+      cerr << "Player error: " << err << endl;
+      return 1;
+    }
+
+    bool running = true;
+
+    int track = 0;
+    start_track(player, track, true);
+
+    while (running) {
+      SDL_Delay(1000);
+    }
+
+    delete player;
+
+    return 0;
+
+  } catch (const cxxopts::OptionException &e) {
+    cerr << "error parsing options: " << e.what() << endl;
     return 1;
   }
-
-  const string filename = string(argv[1]);
-
-  if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-    cerr << "Failed to initialize SDL" << endl;
-    return 1;
-  }
-  atexit(SDL_Quit);
-
-  // Create player
-  Player *player = new Player;
-  if (!player) {
-    cerr << "Out of memory" << endl;
-    return 1;
-  }
-
-  // Initialize
-  if (auto err = player->init()) {
-    cerr << "Player error: " << err << endl;
-    return 1;
-  }
-
-  // Load file
-  if (auto err = player->load_file(filename)) {
-    cerr << "Player error: " << err << endl;
-    return 1;
-  }
-
-  bool running = true;
-
-  int track = 0;
-  start_track(player, track, true);
-
-  while (running) {
-    SDL_Delay(1000);
-  }
-
-  delete player;
-
-  return 0;
 }
