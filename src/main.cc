@@ -61,7 +61,7 @@ void start_track(Player *player, int track, bool print_full_info = false) {
   }
 
   char title[512];
-  sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count(),
+  sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count() - 1,
           player->track_info().song, seconds / 60, seconds % 60);
 
   cout << title << endl;
@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
     options.add_options()
       ("input", "Input file", cxxopts::value<string>())
       ("i,info", "Only show info")
+      ("t,track", "Start playing from track NUM",
+        cxxopts::value<int>()->default_value("0"))
       ("h,help", "Print this message");
 
     options.parse_positional({"input"});
@@ -122,7 +124,7 @@ int main(int argc, char *argv[]) {
 
     bool running = true;
 
-    int track = 0;
+    int track = result["track"].as<int>();
     start_track(player, track, print_info);
 
     while (running) {
