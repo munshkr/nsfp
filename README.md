@@ -56,17 +56,20 @@ After cloning the repository, go to the directory and run the following to
 compile and install the player:
 
 ```
-mkdir build && cd build
-cmake ..
 make
 sudo make install
 ```
+
+### Disable ncurses
 
 nsfp uses the `ncurses` library for key handling. You can disable it by passing
 `-DCURSES=OFF` on the cmake line:
 
 ```
+mkdir build && cd build
 cmake -DCURSES=OFF ..
+make
+sudo make install
 ```
 
 ## License
