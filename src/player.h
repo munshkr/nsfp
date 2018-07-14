@@ -34,7 +34,7 @@ public:
   gme_err_t load_file(const std::string &path);
 
   // (Re)start playing track. Tracks are numbered from 0 to track_count() - 1.
-  gme_err_t start_track(int track);
+  gme_err_t start_track(int track, bool dry_run = false);
 
   // Stop playing current file
   void stop();

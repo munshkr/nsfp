@@ -89,7 +89,7 @@ gme_err_t Player::load_file(const string &path) {
 
 int Player::track_count() const { return emu_ ? gme_track_count(emu_) : false; }
 
-gme_err_t Player::start_track(int track) {
+gme_err_t Player::start_track(int track, bool dry_run) {
   if (emu_) {
     gme_free_info(track_info_);
     track_info_ = nullptr;
@@ -109,7 +109,10 @@ gme_err_t Player::start_track(int track) {
     gme_set_fade(emu_, track_info_->length);
 
     paused = false;
-    sound_start();
+
+    if (!dry_run) {
+      sound_start();
+    }
   }
   return 0;
 }

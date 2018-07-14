@@ -23,9 +23,9 @@
 
 using namespace std;
 
-void start_track(Player *player, int track, bool print_full_info = false) {
+void start_track(Player *player, int track, bool dry_run = false) {
   // Start first track
-  if (auto err = player->start_track(track)) {
+  if (auto err = player->start_track(track, dry_run)) {
     cerr << "Player error: " << err << endl;
     exit(1);
   }
@@ -46,19 +46,17 @@ void start_track(Player *player, int track, bool print_full_info = false) {
 
   auto &info = player->track_info();
 
-  if (print_full_info) {
-    if (strcmp(info.game, "") != 0)
-      cout << "Game:      " << info.game << "\n";
-    if (strcmp(info.author, "") != 0)
-      cout << "Author:    " << info.author << "\n";
-    if (strcmp(info.copyright, "") != 0)
-      cout << "Copyright: " << info.copyright << "\n";
-    if (strcmp(info.comment, "") != 0)
-      cout << "Comment:   " << info.comment << "\n";
-    if (strcmp(info.dumper, "") != 0)
-      cout << "Dumper:    " << info.dumper;
-    cout << endl;
-  }
+  if (strcmp(info.game, "") != 0)
+    cout << "Game:      " << info.game << "\n";
+  if (strcmp(info.author, "") != 0)
+    cout << "Author:    " << info.author << "\n";
+  if (strcmp(info.copyright, "") != 0)
+    cout << "Copyright: " << info.copyright << "\n";
+  if (strcmp(info.comment, "") != 0)
+    cout << "Comment:   " << info.comment << "\n";
+  if (strcmp(info.dumper, "") != 0)
+    cout << "Dumper:    " << info.dumper;
+  cout << endl;
 
   char title[512];
   sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count() - 1,
@@ -67,7 +65,7 @@ void start_track(Player *player, int track, bool print_full_info = false) {
   cout << title << endl;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
   try {
     cxxopts::Options options(argv[0], "nsfp 0.1 - NSF/NSFE player");
 
@@ -76,7 +74,7 @@ int main(int argc, char *argv[]) {
     options.add_options()
       ("input", "Input file", cxxopts::value<string>())
       ("i,info", "Only show info")
-      ("t,track", "Start playing from track NUM",
+      ("t,track", "Start playing from a specific track",
         cxxopts::value<int>()->default_value("0"))
       ("s,single", "Stop after playing current track")
       ("h,help", "Print this message");
@@ -95,8 +93,9 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
+    // Read options
     const string input = result["input"].as<string>();
-    bool print_info = result["info"].as<bool>();
+    bool show_info = result["info"].as<bool>();
     int track = result["track"].as<int>();
     bool single = result["single"].as<bool>();
 
@@ -125,16 +124,18 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    start_track(player, track, print_info);
+    start_track(player, track, show_info);
 
-    while (true) {
-      SDL_Delay(1000);
+    if (!show_info) {
+      while (true) {
+        SDL_Delay(1000);
 
-      if (player->track_ended()) {
-        if (single || track == player->track_count() - 1) break;
+        if (player->track_ended()) {
+          if (single || track == player->track_count() - 1) break;
 
-        track++;
-        start_track(player, track, print_info);
+          track++;
+          start_track(player, track);
+        }
       }
     }
 
