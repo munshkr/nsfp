@@ -72,8 +72,9 @@ void start_track(Player *player, int track, bool dry_run = false) {
     PRINTF("Dumper:    %s\n", info.dumper);
 
   char title[512];
-  sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count() - 1,
-          player->track_info().song, seconds / 60, seconds % 60);
+  sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track + 1,
+      player->track_count(), player->track_info().song,
+      seconds / 60, seconds % 60);
 
   PRINTF("%s\n\n", title);
 
@@ -93,7 +94,7 @@ int main(int argc, const char *argv[]) {
       ("input", "Input file", cxxopts::value<string>())
       ("i,info", "Only show info")
       ("t,track", "Start playing from a specific track",
-        cxxopts::value<int>()->default_value("0"))
+        cxxopts::value<int>()->default_value("1"))
       ("s,single", "Stop after playing current track")
       ("h,help", "Print this message");
 
@@ -141,6 +142,13 @@ int main(int argc, const char *argv[]) {
       cerr << "Player error: " << err << endl;
       return 1;
     }
+
+    if (track < 1 || track > player->track_count()) {
+      cerr << "Invalid track number. Must be between 1 and "
+           << player->track_count() << endl;
+      return 1;
+    }
+    track--;  // Track is 0-numbered
 
     //
     // Main loop
