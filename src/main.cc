@@ -78,6 +78,7 @@ void start_track(Player *player, int track, bool dry_run = false) {
   PRINTF("%s\n\n", title);
 
 #ifdef CURSES
+  move(5, 0);
   refresh();
 #endif
 }
@@ -171,8 +172,10 @@ int main(int argc, const char *argv[]) {
           running = false;
           break;
         case KEY_RIGHT:
-          track++;
-          start_track(player, track);
+          if (track < player->track_count() - 1) {
+            track++;
+            start_track(player, track);
+          }
           break;
         case KEY_LEFT:
           if (track > 0) {
@@ -185,9 +188,11 @@ int main(int argc, const char *argv[]) {
           if (playing) {
             move(0, 60);
             PRINTF("[Paused]\n");
+            move(5, 0);
           } else {
             move(0, 60);
             PRINTF("         \n");
+            move(5, 0);
           }
           playing = !playing;
           break;
