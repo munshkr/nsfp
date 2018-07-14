@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
 find_package(SDL2 REQUIRED)
 # FIXME Add find_package for libgme
 
-option(NCURSES "Use ncurses" OFF)
+option(NCURSES "Use ncurses" ON)
 
 if(CURSES)
   message("-- Use ncurses")
