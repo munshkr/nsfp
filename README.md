@@ -32,14 +32,23 @@ Kirby's Adventure: 3/57  (2:30)
 ...
 ```
 
+When running you can also use the following key to control the player:
+
+* <kbd>left</kbd>: Play previous track
+* <kbd>right</kbd>: Play next track
+* <kbd>space</kbd>: Pause/resume playing
+* <kbd>q</kbd>, <kbd>ctrl</kbd>+<kbd>c</kbd>: Exit
+
+
 ## Dependencies
 
 On Debian/Ubuntu you need a recent GCC compiler, and the development files
 forSDL 2.0 and Game Music Emu:
 
 ```
-sudo apt-get install build-essential libsdl2-dev libgme-dev
+sudo apt-get install build-essential libsdl2-dev libgme-dev libncurses-dev
 ```
+
 
 ## Install
 
@@ -51,6 +60,13 @@ mkdir build && cd build
 cmake ..
 make
 sudo make install
+```
+
+nsfp uses the `ncurses` library for key handling. You can disable it by passing
+`-DCURSES=OFF` on the cmake line:
+
+```
+cmake -DCURSES=OFF ..
 ```
 
 ## License
