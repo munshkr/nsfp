@@ -34,6 +34,10 @@
 using namespace std;
 
 void start_track(Player *player, int track, bool dry_run = false) {
+#ifdef CURSES
+  move(0, 0);
+#endif
+
   // Start first track
   if (auto err = player->start_track(track, dry_run)) {
     PRINTF("Player error: %s\n", err);
@@ -71,7 +75,7 @@ void start_track(Player *player, int track, bool dry_run = false) {
   sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count() - 1,
           player->track_info().song, seconds / 60, seconds % 60);
 
-  PRINTF("%s\n", title);
+  PRINTF("%s\n\n", title);
 
 #ifdef CURSES
   refresh();
@@ -143,20 +147,65 @@ int main(int argc, const char *argv[]) {
 
 #ifdef CURSES
     initscr();
+    noecho();
+    keypad(stdscr, TRUE);
 #endif
 
+    bool running = true;
+    bool playing = true;
     start_track(player, track, show_info);
 
-    if (!show_info) {
-      while (true) {
-        SDL_Delay(1000);
+    // If only printing info, do not keep running and exit
+    if (show_info) {
+      running = false;
+    }
 
-        if (player->track_ended()) {
-          if (single || track == player->track_count() - 1) break;
-
+    while (running) {
+      // Handle input
+      int ch = getch();
+      switch (ch) {
+        case 'q':
+          running = false;
+          break;
+        case KEY_RIGHT:
           track++;
           start_track(player, track);
+          break;
+        case KEY_LEFT:
+          if (track > 0) {
+            track--;
+          }
+          start_track(player, track);
+          break;
+        case ' ':
+          player->pause(playing);
+          if (playing) {
+#ifdef CURSES
+            move(0, 60);
+#endif
+            PRINTF("[Paused]\n");
+          } else {
+#ifdef CURSES
+            move(0, 60);
+            PRINTF("         \n");
+#else
+            PRINTF("[Playing]\n");
+#endif
+          }
+          playing = !playing;
+          break;
+      }
+
+      // If track ended, play the next track
+      if (player->track_ended()) {
+        // If all tracks have been played, exit
+        if (single || track == player->track_count() - 1) {
+          running = false;
+          break;
         }
+
+        track++;
+        start_track(player, track);
       }
     }
 
