@@ -149,10 +149,12 @@ int main(int argc, const char *argv[]) {
     initscr();
     noecho();
     keypad(stdscr, TRUE);
+    timeout(1000);
+
+    bool playing = true;
 #endif
 
     bool running = true;
-    bool playing = true;
     start_track(player, track, show_info);
 
     // If only printing info, do not keep running and exit
@@ -161,6 +163,7 @@ int main(int argc, const char *argv[]) {
     }
 
     while (running) {
+#ifdef CURSES
       // Handle input
       int ch = getch();
       switch (ch) {
@@ -180,21 +183,18 @@ int main(int argc, const char *argv[]) {
         case ' ':
           player->pause(playing);
           if (playing) {
-#ifdef CURSES
             move(0, 60);
-#endif
             PRINTF("[Paused]\n");
           } else {
-#ifdef CURSES
             move(0, 60);
             PRINTF("         \n");
-#else
-            PRINTF("[Playing]\n");
-#endif
           }
           playing = !playing;
           break;
       }
+#else
+      SDL_Delay(1000);
+#endif
 
       // If track ended, play the next track
       if (player->track_ended()) {
