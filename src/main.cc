@@ -18,6 +18,16 @@
 #include <iostream>
 #include <string>
 
+#ifdef CURSES
+#include <ncurses.h>
+#endif
+
+#ifdef CURSES
+#define PRINTF(...) printw(__VA_ARGS__)
+#else
+#define PRINTF(...) printf(__VA_ARGS__)
+#endif
+
 #include "cxxopts.h"
 #include "player.h"
 
@@ -26,7 +36,7 @@ using namespace std;
 void start_track(Player *player, int track, bool dry_run = false) {
   // Start first track
   if (auto err = player->start_track(track, dry_run)) {
-    cerr << "Player error: " << err << endl;
+    PRINTF("Player error: %s\n", err);
     exit(1);
   }
 
@@ -47,22 +57,25 @@ void start_track(Player *player, int track, bool dry_run = false) {
   auto &info = player->track_info();
 
   if (strcmp(info.game, "") != 0)
-    cout << "Game:      " << info.game << "\n";
+    PRINTF("Game:      %s\n", info.game);
   if (strcmp(info.author, "") != 0)
-    cout << "Author:    " << info.author << "\n";
+    PRINTF("Author:    %s\n", info.author);
   if (strcmp(info.copyright, "") != 0)
-    cout << "Copyright: " << info.copyright << "\n";
+    PRINTF("Copyright: %s\n", info.copyright);
   if (strcmp(info.comment, "") != 0)
-    cout << "Comment:   " << info.comment << "\n";
+    PRINTF("Comment:   %s\n", info.comment);
   if (strcmp(info.dumper, "") != 0)
-    cout << "Dumper:    " << info.dumper;
-  cout << endl;
+    PRINTF("Dumper:    %s\n", info.dumper);
 
   char title[512];
   sprintf(title, "%s: %d/%d %s (%ld:%02ld)", game, track, player->track_count() - 1,
           player->track_info().song, seconds / 60, seconds % 60);
 
-  cout << title << endl;
+  PRINTF("%s\n", title);
+
+#ifdef CURSES
+  refresh();
+#endif
 }
 
 int main(int argc, const char *argv[]) {
@@ -124,6 +137,14 @@ int main(int argc, const char *argv[]) {
       return 1;
     }
 
+    //
+    // Main loop
+    //
+
+#ifdef CURSES
+    initscr();
+#endif
+
     start_track(player, track, show_info);
 
     if (!show_info) {
@@ -140,6 +161,10 @@ int main(int argc, const char *argv[]) {
     }
 
     delete player;
+
+#ifdef CURSES
+    endwin();
+#endif
 
     return 0;
 
